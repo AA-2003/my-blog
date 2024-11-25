@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
 def post_list(request):
     posts = Post.objects.all().order_by('-created_at')
@@ -27,6 +28,8 @@ def add_post(request):
         form = PostForm()
     return render(request, 'blog/add_post.html', {'form': form})
 
+
+@login_required
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     # فیلتر کردن کامنت‌های تاییدشده
@@ -83,3 +86,15 @@ def manage_comments(request):
         return redirect('manage_comments')
 
     return render(request, 'blog/manage_comments.html', {'comments': comments})
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "ثبت‌نام با موفقیت انجام شد!")
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/signup.html', {'form': form})
