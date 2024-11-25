@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 def post_list(request):
@@ -28,27 +29,24 @@ def add_post(request):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    comments = post.comments.filter(parent__isnull=True)  # فقط کامنت‌های سطح اول
-
+    # فیلتر کردن کامنت‌های تاییدشده
+    comments = Comment.objects.filter(post=post, is_approved=True, parent=None).order_by('-created_at')
+    
     if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        content = request.POST.get('content')
-        parent_id = request.POST.get('parent_id')  # آیدی کامنت والد (در صورت وجود)
+        username = request.POST['username']
+        email = request.POST['email']
+        content = request.POST['content']
+        parent_id = request.POST.get('parent_id')
 
-        if username and email and content:
-            parent_comment = None
-            if parent_id:
-                parent_comment = Comment.objects.get(id=parent_id)
-            Comment.objects.create(
-                post=post, parent=parent_comment, username=username, email=email, content=content
-            )
-            messages.success(request, 'کامنت یا پاسخ شما با موفقیت اضافه شد!')
-            return redirect('post_detail', post_id=post.id)
-        else:
-            messages.error(request, 'لطفاً تمام فیلدها را پر کنید.')
+        parent = Comment.objects.get(id=parent_id) if parent_id else None
+        new_comment = Comment(post=post, parent=parent, username=username, email=email, content=content)
+        new_comment.save()
+
+        messages.success(request, "نظر شما ثبت شد و منتظر تایید ادمین است.")
+        return redirect('post_detail', post_id=post_id)
 
     return render(request, 'blog/post_detail.html', {'post': post, 'comments': comments})
+
 
 
 
@@ -64,3 +62,24 @@ def delete_post(request, post_id):
     post.delete()  # حذف پست
     messages.success(request, "پست با موفقیت حذف شد.")
     return redirect('post_list')        
+
+
+@staff_member_required
+def manage_comments(request):
+    comments = Comment.objects.filter(is_approved=False).order_by('-created_at')
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        comment_id = request.POST.get('comment_id')
+        comment = get_object_or_404(Comment, id=comment_id)
+
+        if action == 'approve':
+            comment.is_approved = True
+            comment.save()
+            messages.success(request, "کامنت تایید شد.")
+        elif action == 'delete':
+            comment.delete()
+            messages.success(request, "کامنت حذف شد.")
+
+        return redirect('manage_comments')
+
+    return render(request, 'blog/manage_comments.html', {'comments': comments})

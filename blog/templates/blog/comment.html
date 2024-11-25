@@ -3,7 +3,7 @@
         <p><strong>{{ comment.username }}</strong> گفت:</p>
         <p>{{ comment.content }}</p>
         <p class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</p>
-        <button class="btn btn-link p-0" onclick="toggleReplyForm({{ comment.id }})">پاسخ</button>
+        <button class="btn btn-link p-0" onclick="toggleReplyForm({{ comment.id }})" >پاسخ</button>
         
         <!-- فرم پاسخ به کامنت -->
         <form method="post" class="mt-2" style="display:none;" id="reply-form-{{ comment.id }}">

@@ -20,6 +20,7 @@ class Comment(models.Model):
     email = models.EmailField()  # ایمیل
     content = models.TextField()  # متن کامنت
     created_at = models.DateTimeField(auto_now_add=True)  # تاریخ ایجاد
+    is_approved = models.BooleanField(default=False)  # فیلد تایید کامنت
 
     def __str__(self):
         return f"{self.username} - {self.content[:20]}"
