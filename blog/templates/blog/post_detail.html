@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }}</title>
+    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.content }}</p>
+        <p>تاریخ ایجاد: {{ post.created_at|date:"Y-m-d H:i" }}</p>
+
+        <!-- نمایش تصویر اگر وجود داشته باشد -->
+        {% if post.image %}
+            <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 300px;">
+        {% endif %}
+
+        <!-- نمایش ویدئو اگر وجود داشته باشد -->
+        {% if post.video %}
+            <video controls style="max-width: 300px;">
+                <source src="{{ post.video.url }}" type="video/mp4">
+                مرورگر شما از این ویدئو پشتیبانی نمی‌کند.
+            </video>
+        {% endif %}
+        <div>
+            <a href="{% url 'post_list' %}" class="add-post-btn">Back to Blog</a>
+            {% if user.is_staff %}
+                <form action="{% url 'delete_post' post.id %}" method="post"  style="display:inline;" >
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit" onclick="return confirm('آیا مطمئن هستید که می‌خواهید این پست را حذف کنید؟');">
+                        حذف
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
