@@ -1,0 +1,36 @@
+<div class="comment card mb-3 ms-{{ comment.parent|default:0|yesno:"3,0" }}">
+    <div class="card-body">
+        <p><strong>{{ comment.username }}</strong> گفت:</p>
+        <p>{{ comment.content }}</p>
+        <p class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</p>
+        <button class="btn btn-link p-0" onclick="toggleReplyForm({{ comment.id }})">پاسخ</button>
+        
+        <!-- فرم پاسخ به کامنت -->
+        <form method="post" class="mt-2" style="display:none;" id="reply-form-{{ comment.id }}">
+            {% csrf_token %}
+            <input type="hidden" name="parent_id" value="{{ comment.id }}">
+            <div class="mb-2">
+                <input type="text" name="username" class="form-control" placeholder="نام کاربری" required>
+            </div>
+            <div class="mb-2">
+                <input type="email" name="email" class="form-control" placeholder="ایمیل" required>
+            </div>
+            <div class="mb-2">
+                <textarea name="content" class="form-control" placeholder="متن پاسخ" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">ارسال پاسخ</button>
+        </form>
+
+        <!-- نمایش پاسخ‌ها -->
+        {% for reply in comment.children %}
+            {% include 'blog/comment.html' with comment=reply %}
+        {% endfor %}
+    </div>
+</div>
+<script>
+    function toggleReplyForm(commentId) {
+        const form = document.getElementById(`reply-form-${commentId}`);
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+    </script>
+    

@@ -94,3 +94,25 @@ h1 {
 .add-comment button:hover {
     background-color: #0056b3;
 }
+
+.reply {
+    border-left: 2px solid #ddd;
+    margin-top: 10px;
+    padding-left: 10px;
+}
+.reply .comment-date {
+    font-size: 0.9em;
+    color: #555;
+}
+
+.comment {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+.comment .comment-date {
+    font-size: 0.9em;
+    color: #555;
+}
+.comment {
+    margin-left: 20px;
+}

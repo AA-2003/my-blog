@@ -28,21 +28,28 @@ def add_post(request):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    comments = post.comments.all()
-    
+    comments = post.comments.filter(parent__isnull=True)  # فقط کامنت‌های سطح اول
+
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
         content = request.POST.get('content')
+        parent_id = request.POST.get('parent_id')  # آیدی کامنت والد (در صورت وجود)
 
         if username and email and content:
-            Comment.objects.create(post=post, username=username, email=email, content=content)
-            messages.success(request, 'کامنت شما با موفقیت اضافه شد!')
+            parent_comment = None
+            if parent_id:
+                parent_comment = Comment.objects.get(id=parent_id)
+            Comment.objects.create(
+                post=post, parent=parent_comment, username=username, email=email, content=content
+            )
+            messages.success(request, 'کامنت یا پاسخ شما با موفقیت اضافه شد!')
             return redirect('post_detail', post_id=post.id)
         else:
             messages.error(request, 'لطفاً تمام فیلدها را پر کنید.')
 
     return render(request, 'blog/post_detail.html', {'post': post, 'comments': comments})
+
 
 
 @login_required

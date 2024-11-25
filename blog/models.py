@@ -13,6 +13,9 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')  # ارتباط با مدل Post
+    parent = models.ForeignKey(
+        'self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies'
+    )  # ارتباط با کامنت والد
     username = models.CharField(max_length=100)  # نام کاربری
     email = models.EmailField()  # ایمیل
     content = models.TextField()  # متن کامنت
@@ -20,3 +23,12 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.username} - {self.content[:20]}"
+    
+    def children(self):
+        """کامنت‌های پاسخ به این کامنت را برمی‌گرداند"""
+        return self.replies.all()
+
+    @property
+    def is_parent(self):
+        """بررسی می‌کند که آیا این کامنت یک والد است یا خیر"""
+        return self.parent is None
