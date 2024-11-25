@@ -36,6 +36,39 @@
                 </form>
             {% endif %}
         </div>
+        <div class="comments-section">
+            <h4>نظرات</h4>
+            <!-- نمایش نظرات -->
+            {% for comment in comments %}
+                <div class="comment">
+                    <p><strong>{{ comment.username }}</strong> گفت:</p>
+                    <p>{{ comment.content }}</p>
+                    <p class="comment-date">{{ comment.created_at|date:"Y-m-d H:i" }}</p>
+                </div>
+            {% empty %}
+                <p>هنوز نظری ثبت نشده است.</p>
+            {% endfor %}
+        </div>
+        
+        <!-- فرم ارسال نظر -->
+        <div class="add-comment">
+            <h4>ارسال نظر</h4>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="نام کاربری" required>
+                <input type="email" name="email" placeholder="ایمیل" required>
+                <textarea name="content" placeholder="متن نظر" required></textarea>
+                <button type="submit">ارسال</button>
+            </form>
+        </div>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 </body>
 </html>

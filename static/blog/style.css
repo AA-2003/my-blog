@@ -59,3 +59,38 @@ h1 {
 .add-post-btn:hover {
     background-color: #45a049;
 }
+
+
+.comments-section {
+    margin-top: 20px;
+}
+.comment {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+.comment-date {
+    font-size: 0.9em;
+    color: #555;
+}
+.add-comment {
+    margin-top: 20px;
+}
+.add-comment input,
+.add-comment textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.add-comment button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.add-comment button:hover {
+    background-color: #0056b3;
+}

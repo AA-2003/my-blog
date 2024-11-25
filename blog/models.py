@@ -10,3 +10,13 @@ class Post(models.Model):
     
     def __str__(self):
         return self.title
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')  # ارتباط با مدل Post
+    username = models.CharField(max_length=100)  # نام کاربری
+    email = models.EmailField()  # ایمیل
+    content = models.TextField()  # متن کامنت
+    created_at = models.DateTimeField(auto_now_add=True)  # تاریخ ایجاد
+
+    def __str__(self):
+        return f"{self.username} - {self.content[:20]}"

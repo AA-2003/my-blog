@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post
+from .models import Post, Comment
 from .forms import PostForm
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -13,7 +13,10 @@ def post_list(request):
 
 
 @csrf_exempt  # برای ساده‌تر شدن کار، فرم نیازی به امنیت CSRF ندارد
+@login_required  # مطمئن می‌شود که کاربر لاگین کرده است
 def add_post(request):
+    if not request.user.is_superuser:
+        return redirect('post_list') # پیام خطا
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)  # پشتیبانی از فایل‌ها
         if form.is_valid():
@@ -21,25 +24,26 @@ def add_post(request):
             return redirect('post_list')  # تغییر مسیر به لیست پست‌ها
     else:
         form = PostForm()
-    return render(request, 'create_post.html', {'form': form})
+    return render(request, 'blog/add_post.html', {'form': form})
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    return render(request, 'blog/post_detail.html', {'post': post})
-
-@login_required  # مطمئن می‌شود که کاربر لاگین کرده است
-def add_post(request):
-    # بررسی اینکه آیا کاربر ادمین اصلی است
-    if not request.user.is_superuser:
-        return redirect('post_list') # پیام خطا
-
+    comments = post.comments.all()
+    
     if request.method == 'POST':
-        title = request.POST.get('title')
+        username = request.POST.get('username')
+        email = request.POST.get('email')
         content = request.POST.get('content')
-        if title and content:
-            Post.objects.create(title=title, content=content)
-            return redirect('post_list')
-    return render(request, 'blog/add_post.html')
+
+        if username and email and content:
+            Comment.objects.create(post=post, username=username, email=email, content=content)
+            messages.success(request, 'کامنت شما با موفقیت اضافه شد!')
+            return redirect('post_detail', post_id=post.id)
+        else:
+            messages.error(request, 'لطفاً تمام فیلدها را پر کنید.')
+
+    return render(request, 'blog/post_detail.html', {'post': post, 'comments': comments})
+
 
 @login_required
 def delete_post(request, post_id):
