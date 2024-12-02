@@ -8,7 +8,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('')  # Replace 'home' with your app's home URL name
+            return redirect('/')  # Replace 'home' with your app's home URL name
     else:
         form = CustomUserCreationForm()
     return render(request, 'users/register.html', {'form': form})
