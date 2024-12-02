@@ -58,24 +58,23 @@
             {% endfor %}
         </div>
 
-        <!-- فرم ارسال نظر -->
+        <!-- Comment Form -->
         <div class="add-comment mt-4">
             <h4>ارسال نظر</h4>
             <form method="post" class="p-3 border rounded bg-light">
                 {% csrf_token %}
                 <div class="mb-3">
-                    <input type="text" name="username" class="form-control" placeholder="نام کاربری" required>
+                    {% if user.is_authenticated %}
+                        <textarea name="content" class="form-control" placeholder="متن نظر" required></textarea>
+                    {% else %}
+                        <p>برای ارسال نظر ابتدا باید <a href="{% url 'login' %}?next={{ request.path }}">وارد شوید</a>.</p>
+                    {% endif %}
                 </div>
-                <div class="mb-3">
-                    <input type="email" name="email" class="form-control" placeholder="ایمیل" required>
-                </div>
-                <div class="mb-3">
-                    <textarea name="content" class="form-control" placeholder="متن نظر" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-success">ارسال</button>
+                {% if user.is_authenticated %}
+                    <button type="submit" class="btn btn-success">ارسال</button>
+                {% endif %}
             </form>
         </div>
-
         <!-- نمایش پیام‌ها -->
         {% if messages %}
             <div class="mt-4">

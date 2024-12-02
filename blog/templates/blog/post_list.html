@@ -12,13 +12,19 @@
     <header>
         <h1>My Blog</h1>
     </header>
+    <nav>
+        {% if user.is_authenticated %}
+            <p>Welcome, {{ user.username }}!</p>
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">sign up</a>
+        {% endif %}
+    </nav>    
     <div class="container">
         <!-- دکمه افزودن پست جدید -->
         {% if user.is_authenticated and user.is_superuser %}
         <a href="{% url 'add_post' %}" class="add-post-btn">Add New Post</a>
-        {% endif %}
-        {% if user.is_staff %}
-            <a href="{% url 'manage_comments' %}" class="btn btn-warning">مدیریت کامنت‌ها</a>        
         {% endif %}
         <ul class="post-list">
             {% for post in posts %}
