@@ -1,12 +1,8 @@
 from django.urls import path
-from . import views
-from django.contrib.auth import views as auth_views
-
-
+from .views import PostListCreateView, PostDetailView, CommentCreateView
 
 urlpatterns = [
-    path('', views.post_list, name='post_list'),
-    path('add/', views.add_post, name='add_post'),  # آدرس صفحه افزودن پست
-    path('<int:post_id>/', views.post_detail, name='post_detail'),  # آدرس صفحه جزئیات
-    path('post/delete/<int:post_id>/', views.delete_post, name='delete_post'),
+    path('posts/', PostListCreateView.as_view(), name='post_list_create'),
+    path('posts/<int:pk>/', PostDetailView.as_view(), name='post_detail'),
+    path('comments/', CommentCreateView.as_view(), name='comment_create'),
 ]
