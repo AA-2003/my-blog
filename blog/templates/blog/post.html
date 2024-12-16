@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }}</title>
+    <link rel="stylesheet" href="{% static 'blog/css/styles.css' %}">
+</head>
+<body>
+    {% if post %}
+        <h1>{{ post.title }}</h1>
+        <p>{{ post.content }}</p>
+        {% if post.image %}
+            <img src="{{ post.image }}" alt="Post Image">
+        {% endif %}
+        {% if post.video %}
+            <video controls>
+                <source src="{{ post.video }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        {% endif %}
+    {% else %}
+        <h1>Post Not Found</h1>
+        <p>The post you are looking for does not exist.</p>
+    {% endif %}
+    <a href="/">Back to Posts</a>
+</body>
+</html>
